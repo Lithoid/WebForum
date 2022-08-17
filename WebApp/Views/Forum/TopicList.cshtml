@@ -1,0 +1,68 @@
+﻿@model IEnumerable<BL.TopicViewModel>
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Topic list</h1>
+
+<p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-action="CreateTopic" method="post">
+            @Html.ValidationSummary(false)
+            <div class="form-group row">
+                <div class="col-xs-2">
+                    <label class="control-label"></label>
+                    @Html.Editor("name", new { htmlAttributes = new { @class = "form-control ", @id = "name"} })
+                    <span class="text-danger"></span>
+                </div>
+            </div>
+            <input class="btn btn-dark" type="submit" value="Add" />
+        </form>
+    }
+    else
+    {
+        <span class="text-danger">Please register or login to add topics</span>
+
+    }
+
+</p>
+
+
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Posts
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PostsIds.Count)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-dark">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

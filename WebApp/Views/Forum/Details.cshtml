@@ -1,0 +1,76 @@
+﻿@model IEnumerable<BL.PostViewModel>
+
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Topic list</h1>
+
+<p>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-action="CreatePost" method="post">
+            @Html.ValidationSummary(false)
+            <div class="form-group row">
+                <div class="col-xs-2">
+                    <label class="control-label"></label>
+                    @Html.TextArea("message", new { htmlAttributes = new { @class = "form-control", @id = "message",} })
+                    @Html.Hidden("topicId",$"{ViewBag.TopicId}")
+                   
+                </div>
+                 <span class="text-warning">1000 symbols max</span>
+            </div>
+
+            <input class="btn btn-dark" type="submit" value="Add" />
+        </form>
+    }
+    else
+    {
+        <span class="text-danger">Please register or login to send messages</span>
+
+    }
+</p>
+
+
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+
+            </th>
+
+            <th>
+
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                    <p><small>@item.DateCreated</small></p>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Message)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-dark">Delete</a>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
