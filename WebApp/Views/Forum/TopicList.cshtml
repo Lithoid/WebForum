@@ -59,7 +59,7 @@
                 <td>
                     @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
                     {
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-dark">Delete</a>
+                        <a asp-action="DeleteTopic" asp-route-id="@item.Id" class="btn btn-dark">Delete</a>
                     }
                 </td>
             </tr>
