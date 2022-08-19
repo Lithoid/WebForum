@@ -12,7 +12,7 @@ namespace WebApp.Controllers
         private IPostRepository _postRepository;
         private IUserRepository _userRepository;
 
-        public ForumController(ITopicRepository topicRepository, IPostRepository postRepository,IUserRepository userRepository)
+        public ForumController(ITopicRepository topicRepository, IPostRepository postRepository, IUserRepository userRepository)
         {
             _topicRepository = topicRepository;
             _postRepository = postRepository;
@@ -20,21 +20,28 @@ namespace WebApp.Controllers
         }
         public async Task<IActionResult> TopicList()
         {
-            
-            return View(TopicViewModel.GetTopicList(_topicRepository));
+
+            var user = UserViewModel.GetUserByName(User.Identity.Name, _userRepository);
+            if (user != null)
+                if (user.IsConfirmed)
+                    return View(TopicViewModel.GetTopicList(_topicRepository));
+
+
+
+            return RedirectToAction("Confirm", "User", new { message = "Login or register" });
+
         }
 
         public async Task<IActionResult> CreateTopic(IFormCollection formCollection)
         {
             string name = formCollection["name"];
-            var user = UserViewModel.GetUserByName(User.Identity.Name,_userRepository);
+            var user = UserViewModel.GetUserByName(User.Identity.Name, _userRepository);
 
-            if (!String.IsNullOrEmpty(name)&& user!=null)
+            if (!String.IsNullOrEmpty(name) && user != null)
             {
-                var topic = new TopicViewModel() { Name = name, DateCreated=DateTime.Now,UserId = user.Id };
+                var topic = new TopicViewModel() { Name = name, DateCreated = DateTime.Now, UserId = user.Id };
                 await _topicRepository.AddItemAsync(topic);
             }
-           
 
             return RedirectToAction("TopicList");
         }
@@ -47,9 +54,8 @@ namespace WebApp.Controllers
 
             if (!String.IsNullOrEmpty(message))
             {
-                await _postRepository.AddItemAsync(new PostViewModel() { Message = message,TopicId = topicId, DateCreated = DateTime.Now, UserId = user.Id });
+                await _postRepository.AddItemAsync(new PostViewModel() { Message = message, TopicId = topicId, DateCreated = DateTime.Now, UserId = user.Id });
             }
-
 
             return RedirectToAction("Details", new { id = topicId });
         }
@@ -57,7 +63,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Details(Guid id)
         {
             ViewBag.TopicId = id;
-            ViewBag.TopicName = TopicViewModel.GetTopicById(id,_topicRepository).Name;
+            ViewBag.TopicName = TopicViewModel.GetTopicById(id, _topicRepository).Name;
             return View(PostViewModel.GetPostList(_postRepository, id));
         }
 
@@ -66,12 +72,12 @@ namespace WebApp.Controllers
         {
             if (id.HasValue)
             {
-                await _postRepository.DeleteItemsAsync(_postRepository.AllItems.Where(post=>post.TopicId == id));
+                await _postRepository.DeleteItemsAsync(_postRepository.AllItems.Where(post => post.TopicId == id));
                 await _topicRepository.DeleteItemAsync(id.Value);
             }
             return RedirectToAction("TopicList");
         }
-        public async Task<IActionResult> DeletePost(Guid? id,Guid topicId)
+        public async Task<IActionResult> DeletePost(Guid? id, Guid topicId)
         {
             if (id.HasValue)
             {

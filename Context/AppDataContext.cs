@@ -60,9 +60,9 @@ namespace Context
             var moderatorRole = new Role() { Id = Guid.NewGuid(), RoleName = "Moderator" };
             var memberRole = new Role() { Id = Guid.NewGuid(), RoleName = "Member" };
 
-            var adminUser = new User() { Id = Guid.NewGuid(), Name = "admin", Email = "admin@gmail.com", Password = "Qwerty123", RoleId = adminRole.Id };
-            var moderatorUser = new User() { Id = Guid.NewGuid(), Name = "moderator", Email = "moderator@gmail.com", Password = "Qwerty123", RoleId = moderatorRole.Id };
-            var justUser = new User() { Id = Guid.NewGuid(), Name = "user", Email = "user@gmail.com", Password = "Qwerty123", RoleId = memberRole.Id };
+            var adminUser = new User() { Id = Guid.NewGuid(), Name = "admin", Email = "admin@gmail.com", Password = "Qwerty123", RoleId = adminRole.Id,IsConfirmed=true, AuthToken = "test" };
+            var moderatorUser = new User() { Id = Guid.NewGuid(), Name = "moderator", Email = "moderator@gmail.com", Password = "Qwerty123", RoleId = moderatorRole.Id, IsConfirmed = true, AuthToken = "test" };
+            var justUser = new User() { Id = Guid.NewGuid(), Name = "user", Email = "user@gmail.com", Password = "Qwerty123", RoleId = memberRole.Id, IsConfirmed = true,AuthToken="test" };
 
             modelBuilder.Entity<Role>().HasData(
               adminRole,

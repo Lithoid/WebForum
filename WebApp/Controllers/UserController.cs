@@ -29,13 +29,31 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            
+
             if (ModelState.IsValid)
             {
                 UserViewModel user = UserViewModel.GetUserByCred(_userRepository, model.Email, model.Password);
+                
 
                 if (user == null)
                 {
+
                     user = new UserViewModel();
+                    user.Id = Guid.NewGuid();
+                    string userID = user.Id.ToString();
+                    var token =  UserViewModel.GenerateEmailConfirmationToken(user);
+                    var callbackUrl = Url.Action(
+                        "ConfirmEmail",
+                        "User",
+                        new { userId = userID, token = token },
+                        protocol: HttpContext.Request.Scheme);
+
+                    EmailManager emailService = new EmailManager();
+                    await emailService.SendEmailAsync(model.Email, "Confirm your account",
+                        $"Confirm registration by clicking on link: <a href='{callbackUrl}'>link</a>");
+
+                    
                     var role = RoleViewModel.GetMemberRole(_roleRepository);
                     user.Email = model.Email;
                     user.Password = model.Password;
@@ -43,14 +61,41 @@ namespace WebApp.Controllers
                     user.RoleId = role.Id;
                     user.RoleName = role.Name;
                     await _userRepository.AddItemAsync(user);
-                    await Authenticate(user);
+                   
 
-                    return RedirectToAction("TopicList", "Forum");
+                    return RedirectToAction("Confirm", new { message = "Check your email and confirm email" });
                 }
                 ModelState.AddModelError("", "User currently exists");
             }
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("Confirm", new { message = $"User id or token is null" });
+            }
+            var user = UserViewModel.GetUserById(Guid.Parse(userId),_userRepository);
+            if (user == null)
+            {
+                return RedirectToAction("Confirm", new { message = $"User does not exists" });
+            }
+            
+            if (user.AuthToken == token)
+            {
+                UserViewModel newUser = user;
+                newUser.IsConfirmed = true;
+                await _userRepository.DeleteItemAsync(user.Id);
+                await _userRepository.AddItemAsync(newUser);
+                await Authenticate(user);
+                return RedirectToAction("TopicList", "Forum");
+            }
+            else
+                return RedirectToAction("Confirm", new { message = $"Token doesnt match" });
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Login()
@@ -67,7 +112,11 @@ namespace WebApp.Controllers
 
                 if (user != null)
                 {
-                    await Authenticate(user);
+                    if (!user.IsConfirmed)
+                    {
+                        RedirectToAction("Confirm");
+                    }
+                     await Authenticate(user);
 
 
                     return RedirectToAction("Index", "Home");
@@ -91,6 +140,13 @@ namespace WebApp.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
 
+        }
+        public async Task<IActionResult> Confirm(string message=" ")
+        {
+
+
+            ViewBag.ErrorMessage = message;
+            return View();
         }
         public async Task<IActionResult> Logout()
         {

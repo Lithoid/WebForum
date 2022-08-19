@@ -23,6 +23,12 @@ namespace Entities
         [Column("pass")]
         public string Password { get; set; }
 
+        [Column("isConfirmed")]
+        public bool IsConfirmed { get; set; }
+
+        [Column("authToken")]
+        public string AuthToken { get; set; }
+
 
         public Role Role { get; set; }
         public Guid RoleId { get; set; }

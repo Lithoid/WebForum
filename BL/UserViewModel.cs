@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
@@ -19,6 +20,12 @@ namespace BL
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
+        
+        public string AuthToken { get; set; }
+
+
+        public bool IsConfirmed { get; set; }
+
         public Guid RoleId { get; set; }
         public string RoleName { get; set; }
 
@@ -45,9 +52,11 @@ namespace BL
             TopicsIds = user.Topics.Select(a => a.Id).ToList();
             RoleId = user.RoleId;
             RoleName = user.Role.RoleName;
+            AuthToken = user.AuthToken;
+            IsConfirmed = user.IsConfirmed;
         }
 
-      
+        
 
         public static implicit operator User(UserViewModel model)
         {
@@ -57,9 +66,11 @@ namespace BL
                 Name = model.Name,
                 Email = model.Email,
                 Password = model.Password,
-                RoleId = model.RoleId
-                
-                
+                RoleId = model.RoleId,
+                AuthToken = model.AuthToken,
+                IsConfirmed = model.IsConfirmed,
+
+
 
             };
         }
@@ -113,6 +124,16 @@ namespace BL
                 .Include(p => p.Topics)
                 .Select(p => new UserViewModel(p));
         }
-        
+
+        public static string GenerateEmailConfirmationToken(UserViewModel user)
+        {
+
+            user.AuthToken = Guid.NewGuid().ToString();
+            return user.AuthToken;
+
+
+        }
+       
+
     }
 }
