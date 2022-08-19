@@ -29,7 +29,7 @@ namespace WebApp.Controllers
             string name = formCollection["name"];
             var user = UserViewModel.GetUserByName(User.Identity.Name,_userRepository);
 
-            if (name!= null&& user!=null)
+            if (!String.IsNullOrEmpty(name)&& user!=null)
             {
                 var topic = new TopicViewModel() { Name = name, DateCreated=DateTime.Now,UserId = user.Id };
                 await _topicRepository.AddItemAsync(topic);
@@ -45,7 +45,7 @@ namespace WebApp.Controllers
             Guid topicId = Guid.Parse(smth.ToString());
             var user = UserViewModel.GetUserByName(User.Identity.Name, _userRepository);
 
-            if (message != null)
+            if (!String.IsNullOrEmpty(message))
             {
                 await _postRepository.AddItemAsync(new PostViewModel() { Message = message,TopicId = topicId, DateCreated = DateTime.Now, UserId = user.Id });
             }
@@ -57,6 +57,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Details(Guid id)
         {
             ViewBag.TopicId = id;
+            ViewBag.TopicName = TopicViewModel.GetTopicById(id,_topicRepository).Name;
             return View(PostViewModel.GetPostList(_postRepository, id));
         }
 
@@ -65,6 +66,7 @@ namespace WebApp.Controllers
         {
             if (id.HasValue)
             {
+                await _postRepository.DeleteItemsAsync(_postRepository.AllItems.Where(post=>post.TopicId == id));
                 await _topicRepository.DeleteItemAsync(id.Value);
             }
             return RedirectToAction("TopicList");

@@ -66,6 +66,15 @@ namespace BL
             return await repository.ChangeItemAsync(model);
         }
 
+        public static TopicViewModel GetTopicById(Guid id, ITopicRepository repository)
+        {
+            return (repository.AllItems as DbSet<Topic>)
+                .Where(p => p.Id == id)
+                .Include(p => p.Posts)
+                .Include(p => p.User)
+                .Select(p => new TopicViewModel(p))
+                .FirstOrDefault();
+        }
         public static IQueryable<TopicViewModel> GetTopicList(ITopicRepository repository)
         {
             return (repository.AllItems as DbSet<Topic>)

@@ -15,6 +15,7 @@ namespace Entities
     {
         [Column("name")]
         [MaxLength(200)]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
         [Column("dateCreated")]
         public DateTime DateCreated { get; set; }

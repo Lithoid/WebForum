@@ -10,12 +10,12 @@
 <p>
     @if (User.Identity.IsAuthenticated)
     {
-        <form asp-action="CreateTopic" method="post">
+        <form name="topicCreate" asp-action="CreateTopic" method="post">
             @Html.ValidationSummary(false)
             <div class="form-group row">
                 <div class="col-xs-2">
                     <label class="control-label"></label>
-                    @Html.Editor("name", new { htmlAttributes = new { @class = "form-control ", @id = "name"} })
+                    @Html.Editor("name", new { htmlAttributes = new { @class = "form-control ",@maxlength="30", @id = "name"} })
                     <span class="text-danger"></span>
                 </div>
             </div>
@@ -66,3 +66,5 @@
         }
     </tbody>
 </table>
+
+
