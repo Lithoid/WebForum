@@ -22,9 +22,15 @@ namespace WebApp.Controllers
         {
 
             var user = UserViewModel.GetUserByName(User.Identity.Name, _userRepository);
+
             if (user != null)
+            {
                 if (user.IsConfirmed)
                     return View(TopicViewModel.GetTopicList(_topicRepository));
+            }
+
+
+               
 
 
 
