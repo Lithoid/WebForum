@@ -6,7 +6,7 @@ namespace WebApp.Models
     {
 
         [Required(ErrorMessage = "Email is empty")]
-        [DataType(DataType.EmailAddress)]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Email is not valid")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
