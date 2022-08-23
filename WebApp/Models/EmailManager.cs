@@ -10,7 +10,7 @@ namespace WebApp.Models
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Web forum administrator", "mailforsmtpwebforum@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("Web forum administrator", "zhekaceter@gmail.com"));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -21,7 +21,7 @@ namespace WebApp.Models
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 465,true);
-                await client.AuthenticateAsync("mailforsmtpwebforum@gmail.com", "czsmxqeioqsbqvze");
+                await client.AuthenticateAsync("zhekaceter@gmail.com", "baprrnaytvpdtxon");
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);
