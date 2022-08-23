@@ -16,7 +16,7 @@
                 <div class="col-xs-2">
                     <label class="control-label"></label>
                     @Html.Editor("name", new { htmlAttributes = new { @class = "form-control ",@maxlength="30", @id = "name"} })
-                    <span class="text-danger">@ViewBag.ErrorMessage</span>
+                    <span class="text-warning">Max topic length is 30</span>
                 </div>
             </div>
             <input class="btn btn-dark" type="submit" value="Add" />

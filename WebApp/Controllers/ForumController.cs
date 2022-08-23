@@ -29,11 +29,6 @@ namespace WebApp.Controllers
                     return View(TopicViewModel.GetTopicList(_topicRepository));
             }
 
-
-               
-
-
-
             return RedirectToAction("Confirm", "User", new { message = "Login or register" });
 
         }
